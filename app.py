@@ -1,5 +1,6 @@
 import streamlit as st
 import fal_client
+import os
 
 st.set_page_config(page_title="OpenHiggs Studio", layout="wide", page_icon="🎬")
 st.title("🎬 OpenHiggs Cinema Studio")
@@ -23,13 +24,15 @@ if st.button("🎬 Render Video", type="primary"):
     else:
         with st.spinner("Generating video (takes ~15 seconds)..."):
             try:
+                # Tell the system your key before running the model
+                os.environ["FAL_KEY"] = fal_key
+                
                 handler = fal_client.submit(
                     "fal-ai/kling-video/v1/standard/text-to-video", 
                     arguments={
                         "prompt": prompt,
                         "aspect_ratio": aspect_ratio,
-                    },
-                    credentials={"key": fal_key}
+                    }
                 )
                 result = handler.get()
                 video_url = result['video']['url']
