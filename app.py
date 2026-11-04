@@ -11,7 +11,7 @@ with st.sidebar:
     replicate_key = st.text_input("Enter Replicate API Token", type="password")
     st.markdown("---")
     st.markdown("### Camera Controls")
-    motion = st.slider("Motion Intensity", 1, 10, 5)
+    aspect_ratio = st.selectbox("Aspect Ratio", ["16:9", "9:16", "1:1"])
 
 prompt = st.text_area("Describe your scene...", placeholder="A futuristic robot cyberpunk city, heavy rain, camera panning down...")
 
@@ -21,19 +21,24 @@ if st.button("🎬 Render Video", type="primary"):
     elif not prompt:
         st.warning("Please type a prompt first!")
     else:
-        with st.spinner("Generating video (takes ~15-30 seconds)..."):
+        with st.spinner("Generating video via Lightricks LTX-Video Cloud... (takes ~15-30 seconds)..."):
             try:
                 os.environ["REPLICATE_API_TOKEN"] = replicate_key
                 
+                # Using the official public stable model path
                 output = replicate.run(
-                    "fofr/ltx-video:3d9c727",
+                    "lightricks/ltx-video",
                     input={
                         "prompt": prompt,
-                        "num_frames": 32
+                        "aspect_ratio": aspect_ratio
                     }
                 )
                 
                 st.success("Render complete!")
-                st.video(output)
+                
+                # Handle output list or single URL string correctly
+                video_url = output[0] if isinstance(output, list) else output
+                st.video(video_url)
+                
             except Exception as e:
                 st.error(f"Error occurred during generation: {e}")
