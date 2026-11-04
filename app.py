@@ -25,7 +25,6 @@ if st.button("🎬 Render Video", type="primary"):
             try:
                 os.environ["REPLICATE_API_TOKEN"] = replicate_key
                 
-                # Runs a completely free/open-source light video model pipeline
                 output = replicate.run(
                     "fofr/ltx-video:3d9c727",
                     input={
